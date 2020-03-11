@@ -1,0 +1,83 @@
+---
+title:  "Central Limit Theorem App" 
+date: "April 2, 2019"
+output: 
+  ioslides_presentation:
+    logo: logo.png
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+```
+
+## Central Limit Theorem
+
+In probability theory, the **central limit theorem** establishes that, in some situations, when independent random variables are added, their properly normalized sum tends toward a **normal distribution** even if the original variables themselves are not normally distributed. 
+
+The theorem is a key concept in probability theory because it implies that probabilistic and statistical methods that work for normal distributions can be applicable to many problems involving other types of distributions. 
+
+
+(source: Wikipedia)
+
+
+
+## The App
+
+- Our app demonstrates the central limit theorem **interactively** for the exponential distribution
+
+<p style="text-align: center;">
+PDF:  f(x;λ) = λ\*exp(-λ\*x)
+</p>
+
+- The app simulates the distribution of averages of random samples of exponential distributions, 
+and outputs the corresponding histogram.
+
+- The exponential distribution is simulated in R with ```rexp(n, lambda)``` where ```lambda``` is the rate
+parameter and ```n``` the sample size.
+
+- The histogram is produced using the ggplot2 data visualization package for R.
+
+
+
+## User Input
+
+The user can set:
+
+- the value of the rate parameter λ 
+- the sample size 
+
+The user can choose to display over the histogram:
+
+- the sample and theoretical means
+- the probability density of the normal distribution 
+
+<p style="text-align: center;">
+N(1/λ,1/λ*sqrt(1/n))
+</p>
+
+to which the distribution of sample averages approximates
+
+
+
+## Example of Output
+
+```{r}
+lambda <- 0.2 #Set rate to 0.2
+sampleSize <- 40 #Set sample size to 40
+set.seed(307) #Set seed for reproducibility
+
+mns = NULL #Initiate variable to store the outcome of the simulations
+for (i in 1 : 1000) mns = c(mns, mean(rexp(sampleSize,lambda)))
+
+ggplot(data.frame(mns), aes(x=mns)) +
+geom_histogram(aes(y=..density..), binwidth=0.2, fill='lemonchiffon2',
+color="black", alpha = .8) +
+labs(x="sample averages") +
+stat_function(fun=dnorm, args=list(mean=5, sd=sqrt(0.625)),
+aes(color = "normal distribution"), color = "bisque4", size = 1,  show.legend = FALSE) + 
+geom_vline(aes(xintercept = mean(mns), color = 'sample mean'), size = 1, color = 'bisque3') +
+geom_vline(aes(xintercept = 5, color = 'theoretical mean'), size = 1, linetype = 'dashed', color = 'bisque4')
+```
+
